@@ -60,8 +60,8 @@
 
                     // צור scope מבוקר להזרקת תלויות בלבד
                     const scope = {
-                        React, useState, useEffect, useMemo, useCallback, useRef,
-                        styled, motion, Confetti
+                        React, useState, useEffect, useMemo, useCallback, useRef, forwardRef,
+                        styled, motion, Confetti, Play, Trash2, PlusCircle, BookOpen, ArrowLeft, Zap, Loader
                     };
 
                     const componentFactory = new Function(...Object.keys(scope), `return ${transformedCode}`);
@@ -80,8 +80,11 @@
 
         const mockAiApi = (prompt) => {
             // הפרומפט המקורי והתוכן של קוד ה-JSX נשארים זהים מהקובץ הקודם.
+            const draggedItem = useRef(null);
+
             const sortingGameJsxBody = `
                 const { useState, useMemo } = React;
+                const draggedItem = useRef(null);
                 const Container = styled.div`
                     display: flex;
                     flex-direction: column;
@@ -111,18 +114,14 @@
                     align-items: center;
                     justify-content: flex-end;
                     padding-bottom: 10px;
-                    background-color: 
-                        
-                            ${props => {
+                    background-color: ${props => {
                                 switch (props.type) {
                                     case 'paper': return '#a8dadc';
                                     case 'plastic': return '#457b9d';
                                     case 'organic': return '#e63946';
                                     default: return '#f1faee';
                                 }
-                            }}
-                        
-                    ;
+                            }};
                     color: white;
                     font-weight: bold;
                     cursor: pointer;
