@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פלטפורמת הלמידה הקסומה</title>
+    
+    <!-- שלב 1: טעינת React -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- שלב 2: טעינת Babel לקמפול JSX בזמן אמת -->
+    <script src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+    
+    <!-- שלב 3: טעינת ספריות עזר (Styling, Animation, וכו') -->
+    <script src="https://unpkg.com/styled-components/dist/styled-components.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@11/dist/framer-motion.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide-react/dist/umd/lucide-react.js"></script>
+    <script src="https://unpkg.com/react-confetti@6/dist/react-confetti.js"></script>
+    
+    <style>
+        /* סגנון בסיסי למניעת "קפיצה" של התוכן לפני טעינת ה-JS */
+        body { font-family: sans-serif; background-color: #f7f9fc; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <!-- שלב 4: טעינת קוד האפליקציה שלך -->
+    <!-- יש להמיר את קוד ה-JSX שלך ל-JS רגיל בעזרת Babel לפני ההרצה -->
+    <script type="text/babel" data-presets="react">
+        // --- DEPENDENCY SETUP ---
+        // Accessing libraries from the global 'window' object.
+
+        // React is loaded as window.React
+        const { useState, useEffect, useMemo, useCallback, useRef } = React;
+
+        // styled-components is loaded as window.StyledComponents
+        const { default: styled, createGlobalStyle, ThemeProvider } = window.StyledComponents;
+
+        // Framer Motion is loaded as window.FramerMotion
+        const { motion, AnimatePresence } = window.FramerMotion;
+
+        // Lucide React icons are available under window.lucide
+        const { Play, Trash2, PlusCircle, BookOpen, ArrowLeft, Zap, Loader } = window.lucide;
+
+        // React Confetti is loaded as window.ReactConfetti
+        const Confetti = window.ReactConfetti.default;
+
+        const dynamicComponentService = {
+            render: (jsxCode) => {
+                if (!window.Babel) {
+                    return () => <div>שגיאה: ספריית Babel לא נטענה.</div>;
+                }
+                try {
+                    // עטוף את הקוד מה-AI בתבנית פונקציה משלנו לשליטה מלאה
+                    const fullCodeToTranspile = `() => { ${jsxCode} }`;
+
+                    const transformedCode = window.Babel.transform(fullCodeToTranspile, { presets: ['react'] }).code;
+
+                    // צור scope מבוקר להזרקת תלויות בלבד
+                    const scope = {
+                        React, useState, useEffect, useMemo, useCallback, useRef,
+                        styled, motion, Confetti
+                    };
+
+                    const componentFactory = new Function(...Object.keys(scope), `return ${transformedCode}`);
+                    return componentFactory(...Object.values(scope));
+                } catch (error) {
+                    // החזר רכיב שגיאה אינפורמטיבי
+                    return () => (
+                        <div style={{ padding: '20px', backgroundColor: '#fee2e2', border: '1px solid #ef4444', borderRadius: '8px' }}>
+                            <h3>שגיאה בטעינת הלומדה</h3>
+                            <pre style={{ direction: 'ltr', background: '#f8f8f8', padding: '10px', whiteSpace: 'pre-wrap' }}>{error.toString()}</pre>
+                        </div>
+                    );
+                }
+            }
+        };
+
+        const mockAiApi = (prompt) => {
+            // הפרומפט המקורי והתוכן של קוד ה-JSX נשארים זהים מהקובץ הקודם.
+            const sortingGameJsxBody = `
+                const { useState, useMemo } = React;
+                const Container = styled.div`
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 20px;
+                    font-family: sans-serif;
+                `;
+
+                const Title = styled.h2`
+                    color: #333;
+                    margin-bottom: 20px;
+                `;
+
+                const BinsContainer = styled.div`
+                    display: flex;
+                    gap: 20px;
+                    margin-bottom: 30px;
+                `;
+
+                const Bin = styled.div`
+                    width: 120px;
+                    height: 150px;
+                    border: 2px solid #ccc;
+                    border-radius: 10px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: flex-end;
+                    padding-bottom: 10px;
+                    background-color: 
+                        
+                            ${props => {
+                                switch (props.type) {
+                                    case 'paper': return '#a8dadc';
+                                    case 'plastic': return '#457b9d';
+                                    case 'organic': return '#e63946';
+                                    default: return '#f1faee';
+                                }
+                            }}
+                        
+                    ;
+                    color: white;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.2s ease-in-out;
+
+                    &:hover {
+                        transform: translateY(-5px);
+                        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    }
+                `;
+
+                const Item = styled(motion.div)`
+                    width: 80px;
+                    height: 80px;
+                    background-color: #f1faee;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 10px;
+                    cursor: grab;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                `;
+
+                const Message = styled(motion.div)`
+                    font-size: 1.2em;
+                    color: #2a9d8f;
+                    margin-top: 20px;
+                    font-weight: bold;
+                `;
+
+                const itemsData = useMemo(() => [
+                    { id: 1, name: 'נייר', type: 'paper' },
+                    { id: 2, name: 'בקבוק פלסטיק', type: 'plastic' },
+                    { id: 3, name: 'קליפת בננה', type: 'organic' },
+                    { id: 4, name: 'עיתון', type: 'paper' },
+                    { id: 5, name: 'קופסת שימורים', type: 'plastic' },
+                    { id: 6, name: 'שאריות אוכל', type: 'organic' },
+                ], []);
+
+                const [items, setItems] = useState(itemsData);
+                const [message, setMessage] = useState('');
+                const [score, setScore] = useState(0);
+                const [showConfetti, setShowConfetti] = useState(false);
+
+                const handleDrop = useCallback((itemId, binType) => {
+                    const item = items.find(i => i.id === itemId);
+                    if (item && item.type === binType) {
+                        setMessage('כל הכבוד! נכון!');
+                        setScore(prev => prev + 1);
+                        setItems(prev => prev.filter(i => i.id !== itemId));
+                        if (items.length === 1) { // If this was the last item
+                            setShowConfetti(true);
+                        }
+                    } else {
+                        setMessage('אופס! נסה שוב.');
+                    }
+                    setTimeout(() => setMessage(''), 1500);
+                }, [items]);
+
+                return (
+                    <Container>
+                        <Title>משחק מיון אשפה</Title>
+                        <p>גרור את הפריטים לפח המתאים. ציון: {score}/{itemsData.length}</p>
+                        <BinsContainer>
+                            <Bin type="paper" onDragOver={(e) => e.preventDefault()} onDrop={() => handleDrop(draggedItem.current, 'paper')}>
+                                <div>נייר</div>
+                            </Bin>
+                            <Bin type="plastic" onDragOver={(e) => e.preventDefault()} onDrop={() => handleDrop(draggedItem.current, 'plastic')}>
+                                <div>פלסטיק</div>
+                            </Bin>
+                            <Bin type="organic" onDragOver={(e) => e.preventDefault()} onDrop={() => handleDrop(draggedItem.current, 'organic')}>
+                                <div>אורגני</div>
+                            </Bin>
+                        </BinsContainer>
+                        <div>
+                            {items.map(item => (
+                                <Item
+                                    key={item.id}
+                                    draggable
+                                    onDragStart={() => {
+                                        draggedItem.current = item.id;
+                                    }}
+                                    initial={{ opacity: 0, y: -20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.5 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    {item.name}
+                                </Item>
+                            ))}
+                        </div>
+                        <Message
+                            key={message}
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            {message}
+                        </Message>
+                        {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={500} />} 
+                    </Container>
+                );
+            `;
+            const draggedItem = useRef(null);
+
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve({
+                        id: `comp_${Date.now()}`,
+                        name: "משחק מיון אשפה (AI)",
+                        description: "עזרו למיין את האשפה לפחים הנכונים.",
+                        jsxCode: sortingGameJsxBody, // מחזיר רק את גוף הקוד
+                        isStatic: false,
+                    });
+                }, 1500);
+            });
+        };
+
+        // 3. הגדרת Styling גלובלי ו-Theme
+        const theme = {
+            colors: {
+                primary: '#457b9d',
+                secondary: '#a8dadc',
+                accent: '#e63946',
+                background: '#f1faee',
+                text: '#1d3557',
+            },
+            fonts: {
+                body: 'sans-serif',
+                heading: 'serif',
+            },
+        };
+
+        const GlobalStyle = createGlobalStyle`
+            body {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                background-color: ${theme.colors.background};
+                color: ${theme.colors.text};
+                font-family: ${theme.fonts.body};
+            }
+            #root {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+        `;
+
+        // 4. הגדרת קומפוננטת הדוגמה הסטטית (ButterflyLifecycle)
+        const ButterflyLifecycleContainer = styled.div`
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            margin: 20px auto;
+        `;
+
+        const ButterflyLifecycle = () => {
+            return (
+                <ButterflyLifecycleContainer>
+                    <h2>מחזור החיים של הפרפר</h2>
+                    <p>למדו על השלבים המופלאים בחייו של הפרפר.</p>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Life_Cycle_of_a_Butterfly.svg/1200px-Life_Cycle_of_a_Butterfly.svg.png" alt="מחזור החיים של הפרפר" style={{ maxWidth: '100%', height: 'auto' }} />
+                    <p>ביצה -> זחל -> גולם -> פרפר</p>
+                </ButterflyLifecycleContainer>
+            );
+        };
+
+        const initialComponents = [
+            {
+                id: 'butterfly_lifecycle_static',
+                name: 'מחזור החיים של הפרפר',
+                description: 'למדו על השלבים המופלאים בחייו של הפרפר.',
+                component: ButterflyLifecycle, // הפניה ישירה לפונקציה
+                isStatic: true
+            }
+        ];
+
+        // 5. הגדרת כל רכיבי ה-UI המשותפים (AppContainer, Header, Card, וכו')
+        const AppContainer = styled.div`
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        `;
+
+        const Header = styled.header`
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 30px;
+        `;
+
+        const Title = styled.h1`
+            color: ${theme.colors.primary};
+            font-family: ${theme.fonts.heading};
+        `;
+
+        const Button = styled.button`
+            background-color: ${props => props.primary ? theme.colors.primary : theme.colors.secondary};
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s ease-in-out;
+
+            &:hover {
+                background-color: ${props => props.primary ? '#3a6684' : '#8fb8bb'};
+            }
+        `;
+
+        const CardContainer = styled(motion.div)`
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+
+            &:hover {
+                transform: translateY(-5px);
+            }
+        `;
+
+        const CardTitle = styled.h3`
+            color: ${theme.colors.primary};
+            margin: 0;
+        `;
+
+        const CardDescription = styled.p`
+            color: #666;
+            margin: 0;
+        `;
+
+        const Input = styled.input`
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        `;
+
+        const TextArea = styled.textarea`
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            min-height: 100px;
+            resize: vertical;
+        `;
+
+        const Form = styled.form`
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        `;
+
+        const LoadingContainer = styled(motion.div)`
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        `;
+
+        const Spinner = styled(motion.div)`
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid ${theme.colors.primary};
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+
+        // 6. הגדרת רכיבי 
+
+
+        // 6. הגדרת רכיבי "העמודים" (HomePage, ComponentView)
+        const HomePage = ({ components, onSelectComponent, onCreateNewComponent, onDeleteComponent }) => {
+            const [prompt, setPrompt] = useState("");
+            const [isLoading, setIsLoading] = useState(false);
+
+            const handleCreate = async (e) => {
+                e.preventDefault();
+                setIsLoading(true);
+                const newComponentData = await mockAiApi(prompt);
+                onCreateNewComponent(newComponentData);
+                setPrompt("");
+                setIsLoading(false);
+            };
+
+            return (
+                <AppContainer>
+                    <Header>
+                        <Title>פלטפורמת הלמידה הקסומה</Title>
+                        <Button primary onClick={() => { /* Implement actual create new component logic */ }}>
+                            <PlusCircle size={20} />
+                            צור לומדה חדשה
+                        </Button>
+                    </Header>
+                    <Form onSubmit={handleCreate}>
+                        <TextArea
+                            placeholder="תיאור הלומדה שברצונך ליצור (לדוגמה: 'משחק מיון אשפה')"
+                            value={prompt}
+                            onChange={(e) => setPrompt(e.target.value)}
+                            required
+                        />
+                        <Button type="submit" disabled={isLoading}>
+                            {isLoading ? <Spinner /> : <Zap size={20} />} 
+                            {isLoading ? 'יוצר לומדה...' : 'צור לומדה באמצעות AI'}
+                        </Button>
+                    </Form>
+                    <h2>הלומדות שלי</h2>
+                    {components.length === 0 && <p>אין לומדות זמינות. צור אחת חדשה!</p>}
+                    {components.map(comp => (
+                        <CardContainer key={comp.id} onClick={() => onSelectComponent(comp)}>
+                            <CardTitle>{comp.name}</CardTitle>
+                            <CardDescription>{comp.description}</CardDescription>
+                            <Button onClick={(e) => { e.stopPropagation(); onDeleteComponent(comp.id); }}>
+                                <Trash2 size={20} />
+                                מחק
+                            </Button>
+                        </CardContainer>
+                    ))}
+                </AppContainer>
+            );
+        };
+
+        const ComponentView = ({ componentData, onBack }) => {
+            const DynamicComponent = useMemo(() => {
+                if (componentData.isStatic) {
+                    return componentData.component;
+                } else {
+                    return dynamicComponentService.render(componentData.jsxCode);
+                }
+            }, [componentData]);
+
+            return (
+                <AppContainer>
+                    <Header>
+                        <Button onClick={onBack}>
+                            <ArrowLeft size={20} />
+                            חזור
+                        </Button>
+                        <Title>{componentData.name}</Title>
+                    </Header>
+                    <DynamicComponent />
+                </AppContainer>
+            );
+        };
+
+        // 7. הגדרת רכיב ה-App הראשי
+        function App() {
+            const [components, setComponents] = useState(() => {
+                const savedComponents = localStorage.getItem("learningComponents");
+                if (savedComponents) {
+                    const parsed = JSON.parse(savedComponents);
+                    return parsed.map(comp => {
+                        if (comp.isStatic) {
+                            // Re-attach static component reference
+                            if (comp.id === 'butterfly_lifecycle_static') {
+                                return { ...comp, component: ButterflyLifecycle };
+                            }
+                        }
+                        return comp;
+                    });
+                }
+                return initialComponents;
+            });
+            const [selectedComponent, setSelectedComponent] = useState(null);
+
+            useEffect(() => {
+                // Filter out the 'component' property for static components before saving
+                const savableComponents = components.map(comp => {
+                    const { component, ...rest } = comp;
+                    return rest;
+                });
+                localStorage.setItem("learningComponents", JSON.stringify(savableComponents));
+            }, [components]);
+
+            const handleCreateNewComponent = (newComponentData) => {
+                setComponents(prev => [...prev, newComponentData]);
+            };
+
+            const handleDeleteComponent = (idToDelete) => {
+                setComponents(prev => prev.filter(comp => comp.id !== idToDelete));
+                if (selectedComponent && selectedComponent.id === idToDelete) {
+                    setSelectedComponent(null);
+                }
+            };
+
+            return (
+                <ThemeProvider theme={theme}>
+                    <GlobalStyle />
+                    <AnimatePresence mode="wait">
+                        {selectedComponent ? (
+                            <ComponentView key={selectedComponent.id} componentData={selectedComponent} onBack={() => setSelectedComponent(null)} />
+                        ) : (
+                            <HomePage
+                                components={components}
+                                onSelectComponent={setSelectedComponent}
+                                onCreateNewComponent={handleCreateNewComponent}
+                                onDeleteComponent={handleDeleteComponent}
+                            />
+                        )}
+                    </AnimatePresence>
+                </ThemeProvider>
+            );
+        }
+
+        // 8. הרכבת האפליקציה - השורה האחרונה והחשובה ביותר
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+
